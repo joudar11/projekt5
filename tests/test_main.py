@@ -2,9 +2,32 @@ import pytest
 from src.main import pridat_ukol, pripojeni_db, vytvoreni_tabulky, smaz_tabulku, odstranit_ukol, aktualizovat_ukol
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 testtable = "ukoly_test"
 # POZOR - TATO TABULKA BUDE V PRŮBĚHU TESTU NĚKOLIKRÁT DROPNUTA!!!
 # V PŘÍPADĚ POUŽITÍ HLAVNÍ DATABÁZE ZAKOMENTOVAT NÁSLLEDUJÍCÍ FIXTURE, ABY NEDOCHÁZELO KE DROPŮM!!!!!
+
+
+
+
+
+
+
+
+
+
 
 @pytest.fixture(scope="function", autouse=True)
 def setup_test_table():
