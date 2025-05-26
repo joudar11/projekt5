@@ -11,7 +11,7 @@ def setup_test_table():
     smaz_tabulku(testtable)
     vytvoreni_tabulky(testtable)
     for i in range(1, 150):
-        pridat_ukol(f"Test name{i+1}", f"Test_description{i+1}", testtable)
+        pridat_ukol(f"Test name{i}", f"Test_description{i}", testtable)
     yield
     
     smaz_tabulku(testtable)
