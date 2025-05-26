@@ -4,6 +4,7 @@ from src.main import pridat_ukol, pripojeni_db, vytvoreni_tabulky, smaz_tabulku,
 
 testtable = "ukoly_test"
 # POZOR - TATO TABULKA BUDE V PRŮBĚHU TESTU NĚKOLIKRÁT DROPNUTA!!!
+# V PŘÍPADĚ POUŽITÍ HLAVNÍ DATABÁZE ZAKOMENTOVAT NÁSLLEDUJÍCÍ FIXTURE, ABY NEDOCHÁZELO KE DROPŮM!!!!!
 
 @pytest.fixture(scope="function", autouse=True)
 def setup_test_table():
@@ -29,7 +30,7 @@ def test_add_pos():
     conn.close()
 
     pridat_ukol(testname, testdescription, testtable)
-    # odstranění by mělo snížit počet úkolů o 1
+    # PŘIDÁNÍ by mělo zvýšit počet úkolů o 1
 
     conn = pripojeni_db()
     cursor = conn.cursor()
@@ -92,7 +93,7 @@ def test_remove_neg():
     conn.close()
 
     # odstranění neexistuícího úkolu by nemělo změnit počet úkolů
-    odstranit_ukol("9999", tablename=testtable)
+    odstranit_ukol(str(count_before+11), tablename=testtable)
 
     conn = pripojeni_db()
     cursor = conn.cursor()
@@ -126,6 +127,8 @@ def test_update_pos():
     cursor.close()
     conn.close()
 
+    odstranit_ukol(str(ukol_id), testtable)
+    
     assert stav == "hotovo"
 
 
