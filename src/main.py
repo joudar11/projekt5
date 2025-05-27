@@ -4,7 +4,6 @@ import mysql.connector
 
 
 def hlavni_menu(select = None):
-
     while True:
         print("Správce úkolů - Hlavní menu")
         print("1. Přidat úkol")
@@ -15,7 +14,6 @@ def hlavni_menu(select = None):
         if select is None:
             select = input("Vyberte možnost (1-5): ")
         print("")
-
 
         if not select:
             print("Vstup nesmí být prázdný")
@@ -33,8 +31,7 @@ def hlavni_menu(select = None):
         if not select in range(1, 6):
             print("Vyběr musí být v rozsahu 1-5")
             print("")
-        
-        
+                
         else:
             if select == 5:
                 print("Konec programu.")
@@ -46,6 +43,8 @@ def hlavni_menu(select = None):
                 zobraz = input(f"Přeješ si zobrazit kompletní seznam včetně hotových úkolů? Pokud ano, napiš A. Jakýkoliv jiný vstup funkci ukončí.: ")
                 if zobraz.upper() == "A":
                     zobrazit_ukoly(task="all")
+                else:
+                    print("")
             if select == 3:
                 odstranit_ukol()
             if select == 4:
@@ -88,23 +87,18 @@ def pridat_ukol(name = None, description = None, tablename = "ukoly"):
 
 def zobrazit_ukoly(tablename = "ukoly", task="zobraz"):
     connection = pripojeni_db()
-
     if task == "zobraz":
         sql = f"""
             SELECT id, nazev, popis, stav, datum_vytvoreni
             FROM {tablename}
             WHERE stav IN ('nezahájeno', 'probíhá')
         """
-    elif task == "smazat":
+    else:
         sql = f"""
             SELECT id, nazev, popis, stav, datum_vytvoreni
             FROM {tablename}
         """
-    elif task == "all":
-        sql = f"""
-            SELECT id, nazev, popis, stav, datum_vytvoreni
-            FROM {tablename}
-        """
+
     try:
         cursor = connection.cursor()
         cursor.execute(sql)
@@ -114,8 +108,9 @@ def zobrazit_ukoly(tablename = "ukoly", task="zobraz"):
         else:
             print("\nSeznam úkolů:")
             for ukol in ukoly:
-                print(f"ID: {ukol[0]}\nNázev: {ukol[1]}\nPopis: {ukol[2]}\nStav: {ukol[3]}\nVytvořen: {ukol[4]}\n")
+                print(f"\nID: {ukol[0]}\nNázev: {ukol[1]}\nPopis: {ukol[2]}\nStav: {ukol[3]}\nVytvořen: {ukol[4]}")
         cursor.close()
+        print("")
     except Exception as e:
         print(f"Chyba při načítání úkolů: {e}")
     finally:
