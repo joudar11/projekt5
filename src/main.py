@@ -29,8 +29,7 @@ def hlavni_menu(select = None):
             continue
 
         if not select in range(1, 6):
-            print("Vyběr musí být v rozsahu 1-5")
-            print("")
+            print("Vyběr musí být v rozsahu 1-5\n")
                 
         else:
             if select == 5:
