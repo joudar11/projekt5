@@ -1,5 +1,7 @@
 import mysql.connector
 
+# program potřebuje běžící sql server, databázi ukoly_tab na localhostu s loginem root a heslem 1111
+
 
 def hlavni_menu(select = None):
 
@@ -11,20 +13,23 @@ def hlavni_menu(select = None):
         print("4. Aktualizovat úkol")
         print("5. Konec programu")
         if select is None:
-            select = int(input("Vyberte možnost (1-5): "))
+            select = input("Vyberte možnost (1-5): ")
         print("")
 
 
         if not select:
             print("Vstup nesmí být prázdný")
             print("")
+            select = None
             continue
         try:
             select = int(select)
-        except:
-            print("Chyba - neplatný vstup. Vstup musí být celé číslo v rozsahu od 1 do 4.")
+        except Exception as e:
+            print(f"Chyba - neplatný vstup. Vstup musí být celé číslo v rozsahu od 1 do 4.: {e}")
             print("")
+            select = None
             continue
+
         if not select in range(1, 6):
             print("Vyběr musí být v rozsahu 1-4")
             print("")
@@ -70,24 +75,31 @@ def pridat_ukol(name = None, description = None, tablename = "ukoly"):
 
         print("\nÚkol úspěšně uložen.")
         print("")
-    except:
-        print(f"\nChyba při přidávání úkolu do DB")
+    except Exception as e:
+        print(f"\nChyba při přidávání úkolu do DB: {e}")
     finally:
         if connection:
             connection.close()
     return
 
 
-def zobrazit_ukoly(tablename = "ukoly"):
+def zobrazit_ukoly(tablename = "ukoly", task="zobraz"):
     connection = pripojeni_db()
 
-    try:
-        cursor = connection.cursor()
-        cursor.execute(f"""
+    if task == "zobraz":
+        sql = f"""
             SELECT id, nazev, popis, stav, datum_vytvoreni
             FROM {tablename}
             WHERE stav IN ('nezahájeno', 'probíhá')
-        """)
+        """
+    elif task == "smazat":
+        sql = f"""
+            SELECT id, nazev, popis, stav, datum_vytvoreni
+            FROM {tablename}
+        """
+    try:
+        cursor = connection.cursor()
+        cursor.execute(sql)
         ukoly = cursor.fetchall()
         if not ukoly:
             print("Seznam úkolů je prázdný.")
@@ -96,24 +108,36 @@ def zobrazit_ukoly(tablename = "ukoly"):
             for ukol in ukoly:
                 print(f"ID: {ukol[0]}\nNázev: {ukol[1]}\nPopis: {ukol[2]}\nStav: {ukol[3]}\nVytvořen: {ukol[4]}\n")
         cursor.close()
-    except:
-        print(f"Chyba při načítání úkolů")
+    except Exception as e:
+        print(f"Chyba při načítání úkolů: {e}")
     finally:
         connection.close()
     return
 
 
 def odstranit_ukol(id_ukolu = None, tablename = "ukoly"):
-    zobrazit_ukoly()
+    connection = pripojeni_db()
+    if connection is None:
+        return
+
+    try:
+        cursor = connection.cursor()
+        cursor.execute(f"SELECT * FROM {tablename}")
+        ukoly = cursor.fetchall()
+        if not ukoly:
+            print("Seznam úkolů je prázdný.")
+            return
+    except Exception as e:
+        print(f"Chyba při načítání úkolů: {e}")
+
+    zobrazit_ukoly(task="smazat")
+
     if id_ukolu is None:
         id_ukolu = input("\nZadejte ID úkolu k odstranění: ")
     if not id_ukolu.isdigit():
         print("Neplatné ID.")
         return
 
-    connection = pripojeni_db()
-    if connection is None:
-        return
 
     try:
         cursor = connection.cursor()
@@ -122,10 +146,10 @@ def odstranit_ukol(id_ukolu = None, tablename = "ukoly"):
         if cursor.rowcount == 0:
             print("Úkol s tímto ID neexistuje.")
         else:
-            print(" Úkol byl odstraněn.")
+            print("Úkol byl odstraněn.")
         cursor.close()
-    except:
-        print(f"Chyba při odstraňování")
+    except Exception as e:
+        print(f"Chyba při odstraňování: {e}")
     finally:
         connection.close()
         return
@@ -140,8 +164,8 @@ def pripojeni_db():
             database = "ukoly_tab"
         )
         return connection
-    except:
-        print(f"Chyba připojení k databázi")
+    except Exception as e:
+        print(f"Chyba připojení k databázi: {e}")
         return None
 
 
@@ -166,9 +190,8 @@ def vytvoreni_tabulky(table_name="ukoly"):
         )
         connection.commit()
         cursor.close()
-        print("Tabulka vytvořena\n")
-    except:
-        print(f"Chyba při vytváření tabulky")
+    except Exception as e:
+        print(f"Chyba při vytváření tabulky: {e}")
     finally:
         connection.close()
 
@@ -214,8 +237,8 @@ def aktualizovat_ukol(id_ukolu = None, select = None, tablename = "ukoly"):
             print("\nÚkol byl aktualizován.\n")
 
         cursor.close()
-    except:
-        print(f"\nChyba při aktualizaci")
+    except Exception as e:
+        print(f"\nChyba při aktualizaci: {e}")
     finally:
         connection.close()
 
@@ -232,8 +255,8 @@ def smaz_tabulku(tablename: str):
         connection.commit()
         print(f"Tabulka {tablename} byla úspěšně smazána.")
         cursor.close()
-    except:
-        print(f"Chyba při mazání tabulky {tablename}")
+    except Exception as e:
+        print(f"Chyba při mazání tabulky {tablename}: {e}")
     finally:
         connection.close()
 

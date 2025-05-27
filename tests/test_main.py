@@ -59,10 +59,21 @@ def test_add_pos():
     cursor = conn.cursor()
     cursor.execute(f"SELECT COUNT(*) FROM {testtable}")
     count_after = cursor.fetchone()[0]
+
+    
+
+    assert count_after == count_before+1
+
+    cursor.execute(f"""
+        SELECT nazev, popis FROM {testtable}
+        ORDER BY ID DESC LIMIT 1
+    """)
+    nazev, popis = cursor.fetchone()
     cursor.close()
     conn.close()
 
-    assert count_after == count_before+1
+    assert nazev == testname
+    assert popis == testdescription
 
 
 def test_add_neg():
