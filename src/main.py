@@ -25,13 +25,13 @@ def hlavni_menu(select = None):
         try:
             select = int(select)
         except Exception as e:
-            print(f"Chyba - neplatný vstup. Vstup musí být celé číslo v rozsahu od 1 do 4.: {e}")
+            print(f"Chyba - neplatný vstup. Vstup musí být celé číslo v rozsahu od 1 do 5.: {e}")
             print("")
             select = None
             continue
 
         if not select in range(1, 6):
-            print("Vyběr musí být v rozsahu 1-4")
+            print("Vyběr musí být v rozsahu 1-5")
             print("")
         
         
