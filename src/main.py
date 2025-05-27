@@ -43,6 +43,9 @@ def hlavni_menu(select = None):
                 pridat_ukol()
             if select == 2:
                 zobrazit_ukoly()
+                zobraz = input(f"Přeješ si zobrazit kompletní seznam včetně hotových úkolů? Pokud ano, napiš A. Jakýkoliv jiný vstup funkci ukončí.: ")
+                if zobraz.upper() == "A":
+                    zobrazit_ukoly(task="all")
             if select == 3:
                 odstranit_ukol()
             if select == 4:
@@ -93,6 +96,11 @@ def zobrazit_ukoly(tablename = "ukoly", task="zobraz"):
             WHERE stav IN ('nezahájeno', 'probíhá')
         """
     elif task == "smazat":
+        sql = f"""
+            SELECT id, nazev, popis, stav, datum_vytvoreni
+            FROM {tablename}
+        """
+    elif task == "all":
         sql = f"""
             SELECT id, nazev, popis, stav, datum_vytvoreni
             FROM {tablename}
